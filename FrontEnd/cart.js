@@ -1,4 +1,4 @@
-const API = "http://localhost:3000";
+const API = "https://hamed-store.vercel.app";
 
 // 1. عرض المنتجات في الكارت
 function displayCart() {
