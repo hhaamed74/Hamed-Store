@@ -15,7 +15,14 @@ const resetRoutes = require("./routes/reset");
 const app = express();
 
 // 1. Middlewares الأساسية (بوابة الدخول)
-app.use(cors());
+// خليه كدة:
+app.use(
+  cors({
+    origin: "*", // ده هيسمح لأي لينك (بما فيهم لينك الفرونت إند بتاعك) يكلم السيرفر
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 
 // 2. ربط الروتس (منطقة العمليات)

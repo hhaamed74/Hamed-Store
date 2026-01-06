@@ -1,5 +1,4 @@
-const API = "https://hamed-store.vercel.app/";
-
+const API = "https://hamed-store.vercel.app"; // شيل الـ / اللي كانت في الآخر
 // --- 1. تحديث الواجهة (تبديل الأقسام بناءً على حالة تسجيل الدخول) ---
 function toggleUI(isLoggedIn) {
   const authSec = document.getElementById("auth-sec");
