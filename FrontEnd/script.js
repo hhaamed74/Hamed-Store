@@ -1,4 +1,4 @@
-const API = "http://localhost:3000";
+const API = "https://hamed-store.vercel.app/";
 
 // --- 1. تحديث الواجهة (تبديل الأقسام بناءً على حالة تسجيل الدخول) ---
 function toggleUI(isLoggedIn) {
