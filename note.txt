@@ -1,0 +1,182 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+// model
+const User = require("./models/User");
+const Product = require("./models/Product");
+const Order = require("./models/Order");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+// ================== CONNECT MONGODB ==================
+
+mongoose
+  .connect("mongodb://127.0.0.1:27017/store")
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch((err) => console.log(err));
+
+// ================== USERS ==================
+// Create User
+
+app.post("/users", async (req, res) => {
+  try {
+    const user = await User.create(req.body);
+    // بياخد البيانات اللي جايه من البودي ويعمل دوكيومنت جديد في يوزر كوليكشن
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// Get all Users
+
+app.get("/users", async (req, res) => {
+  try {
+    const users = await User.find();
+    // يجيب كل الدوكيومنت من اليوزرس
+    res.json(users);
+    // يرجع مصفوفة المستخدمين
+  } catch (err) {
+    res.status(500).json({ messahe: err.message });
+  }
+});
+
+// ================== PRODUCTS ==================
+// create product
+app.post("/products", async (req, res) => {
+  try {
+    const product = await Product.create(req.body);
+    res.status(201).json(product);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+//get all products
+app.get("/products", async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// create order
+
+app.post("/orders", async (req, res) => {
+  try {
+    const { userId, products } = req.body;
+
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid userId" });
+    }
+
+    // Check if user exists
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check products exist
+
+    const productIds = products.map((p) => p.productId);
+    // البرودكتس دي مصفوفة من المنتجات اللي المستخدم عاوز يطلبها بعمل عليها ماب وبناخد كل عنصر من المصفوفة وبنرجع منه قيمة يعني هنا بناخد البرودكت ايدي لكل عنصر
+    const existingProducts = await Product.find({ _id: { $in: productIds } });
+    // بنعمل كويري وبنقوله هاتلي كل الدوكيومنت اللي الي ادي بتاعها موجود  في المصوفة اللي فوق
+    // النتيجة هتكون مصفوفة فيها كل البرودكت اللي فعلا موجوده في الداتا بيز
+    if (existingProducts.length !== products.length) {
+      return res
+        .status(404)
+        .json({ message: "One or more products not found" });
+    }
+
+    // calculate total using reduce
+
+    const total = products.reduce((sum, item) => {
+      // sum => المجموع المتراكم يبدا من 0
+      // item => العنصر الحالي في المصفوفة
+      const product = existingProducts.find(
+        (p) => p._id.toString() === item.productId
+      );
+      // _id => لازم نحوله لا استرينج عشان المونوجو داتا يز بيخزنه اوبجيكت ايدي وبعدين نقارنه بال بالبوردكت ايدي اللي داي من البودي
+      return sum + product.price * item.qty;
+    }, 0);
+
+    const order = await Order.create({
+      userId,
+      // معرف المستخدم اللي عمل الاوردر
+      products,
+      total,
+      status: "pending",
+    });
+    res.status(201).json(order);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+app.get("/orders", async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("userId")
+      .populate("products.productId");
+    res.json(orders);
+
+    // كل اوردر في المونوجو داتا يز عنده اليوزرادي اللي بيشير لمستخدم في كوليكشن اليوزرس
+    // بدون بوبيولات هترجع بس الادي بتاع المستخدم
+    //بيحول معرف المستخدم والمنتج لمعلومات كاملة.
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.delete("/reset", async (req, res) => {
+  try {
+    await User.deleteMany();
+    await Product.deleteMany();
+    await Order.deleteMany();
+
+    // deleteMany() طريقة مونوجو لحذف كل المستندات في الكولكشن
+    res.json({ message: "Database reset done ✅" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+// ================== UPDATE ORDER STATUS ==================
+app.patch("/orders/:id/status", async (req, res) => {
+  // patch=> تعديل جزء من البيانات مش كل الدوكيومنت
+  // orders/:id/status
+  // :id => placeholder  => يعني اي طلب هيجيلة معرف الاوردر هيتعامل معاه
+
+  try {
+    const { id } = req.params;
+    // بياخد معرف الاوردر اللي في الرابط
+
+    const { status } = req.body;
+    // بياخد الحالة الجديدة اللي المستخدم عاوز يغيرها
+    const allowedStatuses = ["pending", "paid", "shipped", "cancelled"];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+    // تعديل الاوردر
+    const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
+    // بيدور على الاوردر حسب الايدي
+    // بيعدل الاستيتاس للحالة الجديدة
+    // رجع الاوردر بعد التحديث { new: true }
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    res.json(order); // ✅ مهم جدًا عشان Postman يشوف النتيجة
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ================== SERVER ==================
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000 🚀");
+});

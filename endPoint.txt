@@ -1,0 +1,79 @@
+http://localhost:3000/users
+
+-----------------------------------------------------------------------
+http://localhost:3000/products
+
+
+{
+  "name": "Nike Air Max 270",
+  "price": 150.50,
+  "description": "Comfortable lifestyle shoes with large Air Max unit.",
+  "category": "Fashion",
+  "image": "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/awjog90u3mqda2661q97/air-max-270-shoes-V4D79V.png",
+  "countInStock": 25
+}
+
+-----------------------------------------------------------------------
+
+// post
+http://localhost:3000/orders
+
+{
+  "products": [
+    {
+      "productId": "695ad3b5a8d054619ec33ca0",
+      "qty": 2
+    },
+    {
+      "productId": "695ad3c5a8d054619ec33ca2",
+      "qty": 1
+    }
+  ]
+}
+
+-----------------------------------------------------------------------
+
+
+// post
+http://localhost:3000/auth/register
+
+{
+  "name": "mayan",
+  "email": "mayan@example.com",
+  "password": "1234567"
+}
+
+-----------------------------------------------------------------------
+
+
+http://localhost:3000/auth/login
+
+{
+  "email": "mayan@example.com",
+  "password": "1234567"
+}
+
+get token....
+
+-----------------------------------------------------------------------
+
+// get
+http://localhost:3000/orders/my-orders
+
+
+-----------------------------------------------------------------------
+
+// delete
+http://localhost:3000/reset/all
+
+-----------------------------------------------------------------------
+
+
+// patch
+http://localhost:3000/orders/:id/status
+
+id=> بتاعت الاوردر
+{
+  "status": "shipped"
+}
+

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hamed Store | Premium Shop</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="container">
+        <a href="#" class="logo">HAMED<span>STORE</span></a>
+        <ul class="nav-links">
+          <li><a href="#products-sec">Products</a></li>
+          <li><a href="#orders-sec">My Orders</a></li>
+          <li id="admin-link" class="hidden">
+            <a href="admin.html" style="color: #ff3e3e; font-weight: 800"
+              >Dashboard ⚙️</a
+            >
+          </li>
+          <li id="nav-logout" class="hidden">
+            <a href="#" onclick="logout()" class="logout-btn">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section id="auth-sec" class="auth-card">
+        <div class="auth-header">
+          <h2>Welcome</h2>
+          <p>Login or create an account to start shopping</p>
+        </div>
+        <div class="auth-inputs">
+          <div class="input-group">
+            <input
+              id="name"
+              type="text"
+              placeholder="Full Name (For Register)"
+            />
+          </div>
+          <div class="input-group">
+            <input id="email" type="email" placeholder="Email Address" />
+          </div>
+          <div class="input-group">
+            <input id="password" type="password" placeholder="Password" />
+          </div>
+        </div>
+        <div class="auth-buttons">
+          <button class="btn-primary" onclick="login()">Login</button>
+          <button class="btn-secondary" onclick="register()">Register</button>
+        </div>
+        <p id="auth-msg" class="status-msg"></p>
+      </section>
+
+      <section id="products-sec" class="hidden">
+        <div class="section-title">
+          <h2>Featured Products</h2>
+          <div class="underline"></div>
+        </div>
+        <div id="products" class="products-grid"></div>
+      </section>
+
+      <section id="orders-sec" class="hidden">
+        <div class="section-title">
+          <h2>Your Orders</h2>
+          <div class="underline"></div>
+        </div>
+        <div id="orders" class="orders-container"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

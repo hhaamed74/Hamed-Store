@@ -1,0 +1,13 @@
+# Secret files (Database passwords)
+.env
+
+# Dependencies (Large folders)
+node_modules/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Build folders
+dist/
+build/

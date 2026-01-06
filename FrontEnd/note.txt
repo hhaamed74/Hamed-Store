@@ -1,0 +1,115 @@
+const API = "http://localhost:3000";
+async function fetchProducts() {
+  // async =>asynchronous   دالة غير متزامنة بنستخدمها عشان نقدر نستخدم اويت مع فيتش
+  const res = await fetch(`${API}/products`);
+  // بنرسل طلب للباك اند عاوزين المنتجات
+  // Get
+  // await => استني لحد ما السيرفر يرد قبل ما نكمل السطر اللي بعده
+  const products = await res.json();
+  // بنحول الرد من جيسون ل اوبجيكت
+
+  const container = document.getElementById("products");
+  // بنجيب الديف اللي هيعرض فيه المنتجات
+  container.innerHTML = products
+    .map(
+      (p) => `<div class="product">
+  <p><span>Name:</span> ${p.name}</p>
+  <p><span>Price:</span> ${p.price}</p>
+  </div>`
+    )
+    .join("");
+  // بنعمل لوب على كل المنتجات ونعمل html لكل واحده
+  // join => يحول المصوفة لنص مرة واحده عشان يظهر في الديف
+}
+
+async function fetchOrders() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    document.getElementById("orders").innerHTML =
+      "<p>Please login to see orders</p>";
+    return;
+  }
+
+  const res = await fetch(`${API}/orders`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const orders = await res.json();
+
+  const container = document.getElementById("orders");
+  container.innerHTML = orders
+    .map(
+      (o) => `<div class="order">
+        <p><span>Order ID:</span> ${o._id}</p>
+        <p><span>User:</span> ${o.userId.name}</p>
+        <p><span>Total:</span> ${o.total}</p>
+        <p><span>Status:</span> ${o.status}</p>
+        <button onclick="updateOrderStatus('${o._id}','shipped')">
+          Mark as shipped
+        </button>
+      </div>`
+    )
+    .join("");
+}
+
+async function updateOrderStatus(orderId, status) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API}/orders/${orderId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  const updatedOrder = await res.json();
+  console.log("Updated Order:", updatedOrder);
+  fetchOrders();
+}
+
+async function register() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(`${API}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  const data = await res.json();
+  document.getElementById("auth-msg").innerText = data.message;
+}
+
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    document.getElementById("auth-msg").innerText = "Login successful ✅";
+    fetchOrders(); // بعد اللوجين نجيب الاوردرز
+  } else {
+    document.getElementById("auth-msg").innerText = data.message;
+  }
+}
+fetchProducts();
+fetchOrders();

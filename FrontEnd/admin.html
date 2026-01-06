@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard | Hamed Store</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="container">
+        <a href="index.html" class="logo">ADMIN<span>PANEL</span></a>
+        <a href="index.html" class="back-link">Back to Shop</a>
+      </nav>
+    </header>
+
+    <main class="container admin-grid">
+      <section class="admin-card">
+        <h3>Add New Product</h3>
+        <form id="add-product-form">
+          <input type="text" id="p-name" placeholder="Product Name" required />
+          <input type="number" id="p-price" placeholder="Price ($)" required />
+          <input type="text" id="p-image" placeholder="Image URL" required />
+          <input type="text" id="p-category" placeholder="Category" />
+          <input
+            type="number"
+            id="p-stock"
+            placeholder="Stock Quantity"
+            required
+          />
+          <textarea
+            id="p-desc"
+            placeholder="Product Description"
+            rows="4"
+          ></textarea>
+          <button type="submit" class="btn-primary">Upload Product 🚀</button>
+        </form>
+      </section>
+
+      <section class="admin-card">
+        <h3>Manage Products</h3>
+        <div id="admin-products-list" class="admin-list"></div>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
